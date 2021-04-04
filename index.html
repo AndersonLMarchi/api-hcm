@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Marcação de Ponto</title>
+  </head>
+  <body>
+    <header>
+      <h1>Marcação de Ponto</h1>
+    </header>
+    <form action="/ponto" method="POST">
+      <fieldset>
+        <h3>Adiciona os dados para Marcação de Ponto</h3>
+        <label>Funcionário</label>
+        <input type="number" name="employeeId" required />
+        <br /><br />
+        <label>Empresa</label>
+        <input type="number" name="employerId" required />
+        <br /><br />
+        <button type="reset">Limpar</button>
+        <input type="submit" value="Enviar" />
+      </fieldset>
+    </form>
+  </body>
+</html>

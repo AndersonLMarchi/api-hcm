@@ -1,0 +1,87 @@
+const express = require("express");
+const path = require("path");
+const bodyParser = require("body-parser");
+const request = require("request");
+
+const porta = 3003;
+const server = express();
+
+server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({ extended: true }));
+
+const mongoose = require("mongoose");
+
+mongoose.Promise = global.Promise;
+mongoose.connect("mongodb://localhost:27017/api-hcm", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+const hcmSchema = new mongoose.Schema({
+  employeeId: Number,
+  employerId: Number,
+  includedAt: Date,
+});
+
+server.listen(porta, function () {
+  console.log(`Servidor funcionando na porta ${porta}.`);
+});
+
+server.post("/ponto", (req, res) => {
+  let dataHoraAtual = new Date();
+
+  let Hcm = mongoose.model("HCM", hcmSchema);
+  let insert = new Hcm(req.body);
+  insert.includedAt = dataHoraAtual;
+  insert
+    .save()
+    .then((item) => {
+      enviaDadosHcm(item);
+      res.send(
+        `<p>Ponto marcado às ${dataHoraAtual.toLocaleTimeString("pt-br")}!</p>
+        <script type="text/javascript">
+          setTimeout("location.href = '/';", 2000);
+        </script>
+        `
+      );
+    })
+    .catch((err) => {
+      res.status(400).send(
+        `<p>Erro ao salvar a marcação do ponto: "${err}"</p>
+          <a href="/">Voltar</a>`
+      );
+    });
+});
+
+server.use("/", (req, res) => {
+  res.sendFile(path.join(__dirname + "/index.html"));
+});
+
+function enviaDadosHcm(item) {
+  request.post(
+    {
+      headers: { "content-type": "application/json" },
+      url:
+        "https://api.mockytonk.com/proxy/ab2198a3-cafd-49d5-8ace-baac64e72222",
+      body: JSON.stringify({
+        includedAt: formataData(item.includedAt),
+        employeeId: item.employeeId,
+        employerId: item.employerId,
+      }),
+    },
+    (error, response, body) => {
+      if (error) {
+        console.log(error);
+      }
+      console.log(JSON.parse(body));
+    }
+  );
+}
+
+function formataData(date) {
+  let day = ("0" + date.getDate()).slice(-2);
+  let month = ("0" + (date.getMonth() + 1)).slice(-2);
+  return `"${date.getFullYear()}-${month}-${day} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}"`;
+}
+
+module.exports = { server };
