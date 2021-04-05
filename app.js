@@ -17,11 +17,14 @@ mongoose.connect(process.env.DB_URL, {
   useUnifiedTopology: true,
 });
 
-const hcmSchema = new mongoose.Schema({
-  employeeId: Number,
-  employerId: Number,
-  includedAt: Date,
-});
+const Hcm = mongoose.model(
+  "HCM",
+  new mongoose.Schema({
+    employeeId: Number,
+    employerId: Number,
+    includedAt: Date,
+  })
+);
 
 const porta = process.env.PORT || 3000;
 
@@ -32,7 +35,6 @@ server.listen(porta, function () {
 server.post("/ponto", (req, res) => {
   let dataHoraAtual = new Date();
 
-  let Hcm = mongoose.model("HCM", hcmSchema);
   let insert = new Hcm(req.body);
   insert.includedAt = dataHoraAtual;
   insert
@@ -53,6 +55,12 @@ server.post("/ponto", (req, res) => {
           <a href="/">Voltar</a>`
       );
     });
+});
+
+server.get("/all", (req, res) => {
+  let strData = Hcm.find({}, (err, docs) => {
+    res.status(200).json(docs);
+  });
 });
 
 server.use("/", (req, res) => {
