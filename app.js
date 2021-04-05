@@ -3,7 +3,6 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const request = require("request");
 
-const porta = 3003;
 const server = express();
 const dotenv = require("dotenv").config();
 
@@ -23,6 +22,8 @@ const hcmSchema = new mongoose.Schema({
   employerId: Number,
   includedAt: Date,
 });
+
+const porta = process.env.PORT || 3000;
 
 server.listen(porta, function () {
   console.log(`Servidor funcionando na porta ${porta}.`);
