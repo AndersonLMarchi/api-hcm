@@ -5,6 +5,7 @@ const request = require("request");
 
 const porta = 3003;
 const server = express();
+const dotenv = require("dotenv").config();
 
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
@@ -12,7 +13,7 @@ server.use(bodyParser.urlencoded({ extended: true }));
 const mongoose = require("mongoose");
 
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost:27017/api-hcm", {
+mongoose.connect(process.env.DB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
